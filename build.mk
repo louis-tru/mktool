@@ -17,7 +17,7 @@ R_DIR      ?= ~/hc
 CWD        ?= $(shell pwd)
 OUT        ?= out/$(PROJ)
 ENV        ?= dev
-COPYS      += package.json Makefile LICENSE README.md deps/mktool
+COPYS      += package.json Makefile LICENSE README.md deps/mktool/build.mk
 supervisor= $(shell node -e "console.log(path.resolve(require.resolve('supervisor'), '../../../.bin/supervisor'))")
 ######################################################
 
