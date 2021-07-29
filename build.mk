@@ -71,6 +71,9 @@ build-install: build
 	$(MAKE) -C $(OUT) install
 	cd out && tar cfz $(PROJ)-all.tgz $(PROJ)
 
+install:
+	npm i --unsafe-perm
+
 kill:
 	@-$(SUDO) systemctl stop $(PROJ)
 	@-cat var/pid|xargs $(SUDO) kill
