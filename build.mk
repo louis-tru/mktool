@@ -44,7 +44,7 @@ CP = \
 
 r_exec = cd $(OUT); \
 	$(NODE) ./deps/mktool/sync_watch.js -u $1 -h $2 $(if $(SYNC),,-d 20000) -t \
-		'$(R_DIR)/$(PROJ)/$(OUT)' -i .config.js -i var -i node_modules & \
+		'$(R_DIR)/$(PROJ)/$(OUT)' -i var -i node_modules & \
 	ssh $1@$2 'cd $(R_DIR)/$(PROJ)/$(OUT); make j$3'
 
 .PHONY: all build build-install kill init $(TARGETS) $(T_TARGETS) $(R_TARGETS) $(J_TARGETS)
