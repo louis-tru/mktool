@@ -44,7 +44,7 @@ CP = \
 
 r_exec = cd $(OUT); \
 	$(NODE) ./deps/mktool/sync_watch.js -u $1 -h $2 $(if $(SYNC),,-d 20000) -t \
-		'$(R_DIR)/$(PROJ)/$(OUT)' -i var -i node_modules & \
+		'$(R_DIR)/$(PROJ)/$(OUT)' -i .config.js -i var -i node_modules & \
 	ssh $1@$2 'cd $(R_DIR)/$(PROJ)/$(OUT); make j$3'
 
 .PHONY: all build build-install kill init $(TARGETS) $(T_TARGETS) $(R_TARGETS) $(J_TARGETS)
@@ -62,7 +62,7 @@ build:
 	find out -name '*.ts'| xargs rm -rf
 	tsc
 	$(foreach i, $(DEPS), $(foreach j, $(shell ls $(i)), $(call CP,$(i)/$(j)/package.json,$(OUT)/$(i)/$(j)) ))
-	@#mv $(OUT)/config.js $(OUT)/.config.js
+	mv $(OUT)/config.js $(OUT)/.config.js
 	if [ -f $(OUT)/config.js.bk ]; then mv $(OUT)/config.js.bk $(OUT)/config.js; \
 		else cp $(OUT)/.config.js $(OUT)/config.js; fi
 	cd out && tar -c --exclude $(PROJ)/node_modules -z -f $(PROJ).tgz $(PROJ)
