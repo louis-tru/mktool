@@ -94,7 +94,7 @@ $(T_TARGETS): kill
 
 # js debugger
 $(J_TARGETS): kill
-	@$(call cfg,$(subst -brk,,$(subst j_,,$@)))
+	@if [ ! -f config.js  ]; then $(call cfg,$(subst -brk,,$(subst j_,,$@))); fi
 	@if [ ! -d node_modules ]; then npm i --unsafe-perm; fi
 	@$(supervisor) -w . -i public -i node_modules -- --inspect$(findstring -brk,$@)=0.0.0.0:$(D_PORT) $(MAIN)
 
