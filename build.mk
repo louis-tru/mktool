@@ -62,7 +62,7 @@ build:
 	find out -name '*.ts'| xargs rm -rf
 	tsc
 	$(foreach i, $(DEPS), $(foreach j, $(shell ls $(i)), $(call CP,$(i)/$(j)/package.json,$(OUT)/$(i)/$(j)) ))
-	mv $(OUT)/config.js $(OUT)/.config.js
+	@#mv $(OUT)/config.js $(OUT)/.config.js
 	if [ -f $(OUT)/config.js.bk ]; then mv $(OUT)/config.js.bk $(OUT)/config.js; \
 		else cp $(OUT)/.config.js $(OUT)/config.js; fi
 	cd out && tar -c --exclude $(PROJ)/node_modules -z -f $(PROJ).tgz $(PROJ)
