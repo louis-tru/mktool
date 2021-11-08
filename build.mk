@@ -36,6 +36,7 @@ fi
 
 CP = \
 	if [ -f "$(1)" ]; then \
+		mkdir -p $(2); \
 		cp $(1) $(2); \
 		if [ "$(notdir $(2))" = "somes" ]; then \
 			cp $(dir $(1))*.types $(2); \
@@ -55,21 +56,21 @@ all: build
 
 build:
 	mkdir -p $(OUT)
-	cd out && ln -sf $(PROJ) dist
+	cd $(OUT)/.. && ln -sf $(PROJ) dist
 	if [ -f $(OUT)/config.js ]; then mv $(OUT)/config.js $(OUT)/config.js.bk; fi
 	$(call cfg,$(ENV))
 	$(foreach i, $(COPYS), mkdir -p $(OUT)/$(dir $(i)); cp -rf $(i) $(OUT)/$(dir $(i));)
-	find out -name '*.ts'| xargs rm -rf
+	find $(OUT) -name '*.ts'| xargs rm -rf
 	tsc
 	$(foreach i, $(DEPS), $(foreach j, $(shell ls $(i)), $(call CP,$(i)/$(j)/package.json,$(OUT)/$(i)/$(j)) ))
 	mv $(OUT)/config.js $(OUT)/.config.js
 	if [ -f $(OUT)/config.js.bk ]; then mv $(OUT)/config.js.bk $(OUT)/config.js; \
 		else cp $(OUT)/.config.js $(OUT)/config.js; fi
-	cd out && tar -c --exclude $(PROJ)/node_modules -z -f $(PROJ).tgz $(PROJ)
+	cd $(OUT)/.. && tar -c --exclude $(PROJ)/node_modules -z -f $(PROJ).tgz $(PROJ)
 
 build-install: build
 	$(MAKE) -C $(OUT) install
-	cd out && tar cfz $(PROJ)-all.tgz $(PROJ)
+	cd $(OUT) && tar cfz $(PROJ)-all.tgz $(PROJ)
 
 install:
 	npm i --unsafe-perm
@@ -88,7 +89,7 @@ $(TARGETS):
 $(T_TARGETS): kill
 	ENV=$(subst -brk,,$(subst t_,,$@)) $(MAKE) build
 	@-pgrep -f "tsc -w" | xargs kill
-	@tsc -w > out/output.out 2>&1 &
+	@tsc -w > $(OUT)/output.out 2>&1 &
 	@if [ -f .config.js ]; then cp .config.js $(OUT); fi
 	$(MAKE) -C $(OUT) j_$(subst t_,,$@)
 
@@ -102,7 +103,7 @@ $(J_TARGETS): kill
 $(R_TARGETS): kill
 	@ENV=$(subst -brk,,$(subst r_,,$@)) $(MAKE) build
 	@-pgrep -f "tsc -w" | xargs kill
-	@tsc -w > out/output.out 2>&1 &
+	@tsc -w > $(OUT)/output.out 2>&1 &
 	@$(call r_exec,root,$(IP),$(shell echo $@|cut -b 2-10))
 
 init:
