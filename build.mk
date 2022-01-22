@@ -32,6 +32,8 @@ if [ -f .config.js ]; then \
 	cat .config.js > config.js; \
 elif [ -f .cfg_$(1).js ]; then \
 	cat .cfg_$(1).js > config.js; \
+elif [ -f cfg/$(1).js ]; then \
+	echo "module.exports={...require(\"./cfg/$(1)\")};" > config.js; \
 fi
 
 CP = \
