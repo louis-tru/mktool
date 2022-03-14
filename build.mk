@@ -37,11 +37,14 @@ elif [ -f cfg/$(1).js ]; then \
 fi
 
 CP = \
-	if [ -f "$(1)" ]; then \
+	if [ -f "$(1)/package.json" ]; then \
 		mkdir -p $(2); \
-		cp $(1) $(2); \
+		cp $(1)/package.json $(2); \
 		if [ "$(notdir $(2))" = "somes" ]; then \
-			cp $(dir $(1))*.types $(2); \
+			cp $(1)/*.types $(2); \
+		fi; \
+		if [ -d "$(1)/build" ]; then \
+			cp -rf $(1)/build $(2); \
 		fi; \
 	fi;
 
@@ -64,7 +67,10 @@ build:
 	$(foreach i, $(COPYS), mkdir -p $(OUT)/$(dir $(i)); cp -rf $(i) $(OUT)/$(dir $(i));)
 	find $(OUT) -name '*.ts'| xargs rm -rf
 	tsc
-	$(foreach i, $(DEPS), $(foreach j, $(shell ls $(i)), $(call CP,$(i)/$(j)/package.json,$(OUT)/$(i)/$(j)) ))
+	$(foreach i, $(DEPS), \
+		$(foreach j, $(shell ls $(i)), $(call CP,$(i)/$(j),$(OUT)/$(i)/$(j)) \
+		) \
+	)
 	mv $(OUT)/config.js $(OUT)/.config.js
 	if [ -f $(OUT)/config.js.bk ]; then mv $(OUT)/config.js.bk $(OUT)/config.js; \
 		else cp $(OUT)/.config.js $(OUT)/config.js; fi
