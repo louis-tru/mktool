@@ -62,7 +62,6 @@ all: build
 build:
 	mkdir -p $(OUT)
 	cd $(OUT)/.. && ln -sf $(PROJ) dist
-	if [ -f $(OUT)/config.js ]; then mv $(OUT)/config.js $(OUT)/config.js.bk; fi
 	$(call cfg,$(ENV))
 	$(foreach i, $(COPYS), mkdir -p $(OUT)/$(dir $(i)); cp -rf $(i) $(OUT)/$(dir $(i));)
 	find $(OUT) -name '*.ts'| xargs rm -rf
@@ -71,9 +70,6 @@ build:
 		$(foreach j, $(shell ls $(i)), $(call CP,$(i)/$(j),$(OUT)/$(i)/$(j)) \
 		) \
 	)
-	mv $(OUT)/config.js $(OUT)/.config.js
-	if [ -f $(OUT)/config.js.bk ]; then mv $(OUT)/config.js.bk $(OUT)/config.js; \
-		else cp $(OUT)/.config.js $(OUT)/config.js; fi
 	cd $(OUT)/.. && tar -c --exclude $(PROJ)/node_modules -z -f $(PROJ).tgz $(PROJ)
 
 build-install: build
