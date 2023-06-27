@@ -19,11 +19,15 @@ OUT        ?= out/$(PROJ)
 ENV        ?= dev
 COPYS      += package.json Makefile LICENSE README.md deps/mktool/build.mk
 supervisor= $(shell node -e "console.log(path.resolve(require.resolve('supervisor'), '../../../.bin/supervisor'))")
-TSC        ?= tsc
+TSC        ?= $(shell which tsc)
 ######################################################
 
 ifneq ($(USER),root)
 	SUDO = "sudo"
+endif
+
+ifeq ($(TSC),)
+	TSC = ./node_modules/.bin/tsc
 endif
 
 IP ?=127.0.0.1
