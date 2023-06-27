@@ -19,6 +19,7 @@ OUT        ?= out/$(PROJ)
 ENV        ?= dev
 COPYS      += package.json Makefile LICENSE README.md deps/mktool/build.mk
 supervisor= $(shell node -e "console.log(path.resolve(require.resolve('supervisor'), '../../../.bin/supervisor'))")
+TSC        ?= tsc
 ######################################################
 
 ifneq ($(USER),root)
@@ -65,7 +66,7 @@ build:
 	$(call cfg,$(ENV))
 	$(foreach i, $(COPYS), mkdir -p $(OUT)/$(dir $(i)); cp -rf $(i) $(OUT)/$(dir $(i));)
 	find $(OUT) -name '*.ts'| xargs rm -rf
-	tsc
+	$(TSC)
 	$(foreach i, $(DEPS), \
 		$(foreach j, $(shell ls $(i)), $(call CP,$(i)/$(j),$(OUT)/$(i)/$(j)) \
 		) \
@@ -92,8 +93,8 @@ $(TARGETS):
 # tsc -w
 $(T_TARGETS): kill
 	ENV=$(subst -brk,,$(subst t_,,$@)) $(MAKE) build
-	@-pgrep -f "tsc -w" | xargs kill
-	@tsc -w > $(OUT)/output.out 2>&1 &
+	@-pgrep -f "$(TSC) -w" | xargs kill
+	@$(TSC) -w > $(OUT)/output.out 2>&1 &
 	@if [ -f .config.js ]; then cp .config.js $(OUT); fi
 	$(MAKE) -C $(OUT) j_$(subst t_,,$@)
 
@@ -106,8 +107,8 @@ $(J_TARGETS): kill
 # remote debugger
 $(R_TARGETS): kill
 	@ENV=$(subst -brk,,$(subst r_,,$@)) $(MAKE) build
-	@-pgrep -f "tsc -w" | xargs kill
-	@tsc -w > $(OUT)/output.out 2>&1 &
+	@-pgrep -f "$(TSC) -w" | xargs kill
+	@$(TSC) -w > $(OUT)/output.out 2>&1 &
 	@$(call r_exec,root,$(IP),$(shell echo $@|cut -b 2-10))
 
 init:
